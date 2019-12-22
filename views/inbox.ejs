@@ -25,7 +25,7 @@
                                 <%= users[i].name %>
                             </h5>
                         </div>
-                  
+
                     </div>
                 </div>
                 <% }   %>
@@ -38,8 +38,9 @@
                 <div class="col-12 mb-3 pt-0 mt-0">
                     <span id="username"></span>
                 </div>
-              <h1>  
-                <!-- <div class="incoming_msg">
+                <h1>
+
+                    <!-- <div class="incoming_msg">
                     <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil">
                     </div>
                     <div class="received_msg">
@@ -61,8 +62,10 @@
             <div class="type_msg">
                 <span class="pencil_anim" style="display:none">Typing.....</span>
                 <div class="input_msg_write">
-                    <input type="text" class="write_msg" placeholder="Type a message" style="border:0; outline: none;" />
-                    <button class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+                    <input type="text" class="write_msg" placeholder="Type a message"
+                        style="border:0; outline: none;" />
+                    <button class="msg_send_btn" type="button"><i class="fa fa-paper-plane-o"
+                            aria-hidden="true"></i></button>
                 </div>
             </div>
         </div>
@@ -87,9 +90,9 @@
         });
         socket.on('typing', function (data) {
             if (myname != data.from) {
-                $(".pencil_anim").html(myname+" is Typing" +data.to);
-                    $(".pencil_anim").show(); 
-            
+                $(".pencil_anim").html(myname + " is Typing" + data.to);
+                $(".pencil_anim").show();
+
             }
         });
         socket.on('stoptyping', function (data) {
@@ -115,7 +118,8 @@
                         </div>
                     <div class="received_msg">
                         <div class="received_withd_msg   ">
-                            <p class="${getSentiment(data.score)}">${data.msg}    </p>
+                                     
+                            <p class="${getSentiment(data.score)}">${data.msg}  ${iscongratulations(data.msg)} ${isbirthday(data.msg)} ${isspam(data.spamcheck)}  ${isspamurl(data.isurlspam)}   </p>
                             <span class="time_date"> ${moment().fromNow()}</span>
                         </div>
                     </div>
@@ -129,15 +133,15 @@
                 //alert("new user joined")
             }
         })
-        socket.on('disconnect', function () {});
+        socket.on('disconnect', function () { });
 
         $(".pencil_anim").hide();
         username = $(this).find(".chat_ib").text();
-        
+
         $(".chat_list").on('click', function () {
             $(".chat_list").removeClass("active_chat")
             $(this).addClass("active_chat")
-        
+
             $("#username").html("Talking to <strong>" + $(this).find(".chat_ib").text() + "</strong>");
             $(".mesgs").show();
         })
@@ -146,17 +150,17 @@
         })
         $(".write_msg").keyup(function (event) {
             var data = $(".write_msg").val();
-           
+
             if (data == null || data == "") {
                 socket.emit('stoptyping', {
                     from: myname
                 });
                 return;
             }
-          
+
             socket.emit('typing', {
                 from: myname,
-                to:username
+                to: username
             });
             if (event.which == 13) {
                 sendMessage()
@@ -172,16 +176,89 @@
             });
             $(".write_msg").val("");
         }
-        
+
         function getSentiment(sentiment) {
-      if (sentiment > 0.5) {
-        return 'success';
-      } else if (sentiment < 0.0) {
-        return 'danger';
-      } else {
-        return 'default';
-      }
-    }
-    
+            if (sentiment > 0.5) {
+                return 'success';
+            } else if (sentiment < 0.0) {
+                return 'danger';
+            } else {
+                return 'default';
+            }
+        }
+
+        function iscongratulations(str) {
+            str = str.toLowerCase()
+            if (str.includes("congratulations")) {
+                return ("<b onclick='wishes()' >🎉</b>");
+            }
+            else {
+                return ("");
+            }
+
+
+        }
+        function isbirthday(str) {
+            str = str.toLowerCase()
+            if (str.includes("happy birthday")) {
+                return ("<img  onclick='success()' height='18px' src='https://media1.tenor.com/images/e6f67b64a7b507be265b157b6fb43816/tenor.gif'>");
+            }
+            else {
+                return ("");
+            }
+
+        }
+        function isspam(str) {
+            if (str == "spam") {
+                return ("<img  onclick='spamalert()' height='18px' src='https://img.icons8.com/cotton/64/000000/warning-shield.png'>");
+            }
+            else {
+                return (" ");
+            }
+        }
+        function isspamurl(str) {
+            if (str) {
+                return ("<b  onclick='spamurl()' >🤨</b>");
+            }
+            else {
+                return (" ");
+            }
+        }
+
+
     });
+
+    function spamalert() {
+        swal({
+            title: "This is Spam Message",
+            icon: "warning",
+            dangerMode: true,
+        })
+
+    }
+    function success() {
+        swal({
+            title: 'Happy Birthday',
+            icon: "success",
+            button: "ok",
+        });
+
+    }
+    function wishes() {
+        swal({
+            title: 'Congratulations',
+            icon: "success",
+            button: "ok",
+        });
+
+    }
+    function spamurl() {
+        swal({
+            title: "This is Message Contains a URL",
+            icon: "warning",
+            dangerMode: true,
+        });
+
+    }
+
 </script>
