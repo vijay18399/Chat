@@ -119,9 +119,11 @@
                     <div class="received_msg">
                         <div class="received_withd_msg   ">
                                      
-                            <p class="${getSentiment(data.score)}">${data.msg}  ${iscongratulations(data.msg)} ${isbirthday(data.msg)} ${isspam(data.spamcheck)}  ${isspamurl(data.isurlspam)}   </p>
-                            <span class="time_date"> ${moment().fromNow()}</span>
+                            <p class="${getSentiment(data.score)}">${data.msg}  ${iscongratulations(data.msg)} ${isbirthday(data.msg)} ${isspam(data.spamcheck)}  ${isspamurl(data.isurlspam)} <span class="time_date" onclick="Translate('${data.msg}')" > see translation</span>  </p>
+                            <span class="time_date"> ${moment().fromNow()} </span>
+                           
                         </div>
+
                     </div>
                 </div>`
                 )
@@ -261,5 +263,35 @@
         });
 
     }
+    function Translate(msg) {
+var data = {  "msg" :  msg  }
+axios.post('http://localhost:8080/api/translate',data)
+    .then(function (response) {
+        if(!response.data.error)
+        {
+            swal({
+            title: "English :"+response.data.translation ,
+            icon: "success",
+            button: "ok",
+        });
+
+        }
+        else{
+            swal({
+            title: "This is Message cannot be translated ",
+            icon: "warning",
+            dangerMode: true,
+        });
+        }
+      
+    })
+    .catch(function (error) {
+        swal({
+            title: error,
+            icon: "warning",
+            dangerMode: true,
+        });
+    });   
+}
 
 </script>
